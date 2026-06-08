@@ -1,17 +1,17 @@
 package com.dudus.diecast_api.service;
 
 import com.dudus.diecast_api.model.Barang;
-import com.dudus.diecast_api.repository.DiecastRepository;
+import com.dudus.diecast_api.repository.BarangRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DiecastService {
-    private final DiecastRepository repository;
+public class BarangService {
+    private final BarangRepository repository;
 
-    public DiecastService(DiecastRepository repository) {
+    public BarangService(BarangRepository repository) {
         this.repository = repository;
     }
 

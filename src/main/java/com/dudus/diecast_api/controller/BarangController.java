@@ -1,18 +1,18 @@
 package com.dudus.diecast_api.controller;
 
 import com.dudus.diecast_api.model.Barang;
-import com.dudus.diecast_api.service.DiecastService;
+import com.dudus.diecast_api.service.BarangService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import  java.util.List;
 
 @RestController
-@RequestMapping("api/diecast")
-public class DiecastController {
-    private final DiecastService service;
+@RequestMapping("/api/diecast")
+public class BarangController {
+    private final BarangService service;
 
-    public DiecastController(DiecastService service){
+    public BarangController(BarangService service){
         this.service = service;
     }
 
