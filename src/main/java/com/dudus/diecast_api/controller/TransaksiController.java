@@ -5,7 +5,9 @@ import com.dudus.diecast_api.service.TransaksiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/transaksi")
@@ -20,20 +22,22 @@ public class TransaksiController {
     public List<Transaksi> getAll(){return service.getAll();}
 
     @GetMapping("/{id}")
-    public ResponseEntity<Transaksi> getById(@PathVariable Long id){
+    public ResponseEntity<Transaksi> getById(@PathVariable Integer id){
         return service.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Transaksi create(@RequestBody Transaksi transaksi){
-        return service.save(transaksi);
+    @PostMapping("/jual")
+    public ResponseEntity<Transaksi> jual(@RequestBody Map<String, Object> body){
+        Integer barangId = (Integer) body.get("barangId");
+        Integer jumlah = (Integer) body.get("jumlah");
+        BigDecimal hargaJual = new BigDecimal(body.get("hargaJual").toString());
+
+        Transaksi result = service.jual(barangId, jumlah, hargaJual);
+        return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-        service.delete(id);
-        return ResponseEntity.noContent().build();
-    } 
+
+
 }

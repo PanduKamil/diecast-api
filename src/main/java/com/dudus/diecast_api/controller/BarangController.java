@@ -23,7 +23,7 @@ public class BarangController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Barang> getById(@PathVariable Long id){
+    public ResponseEntity<Barang> getById(@PathVariable Integer id){
         return ResponseEntity.ok(service.getByIdOrThrow(id));
     }
 
@@ -33,18 +33,23 @@ public class BarangController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Barang> update(@PathVariable Long id, @Valid @RequestBody Barang barang){
+    public ResponseEntity<Barang> update(@PathVariable Integer id, @Valid @RequestBody Barang barang){
         try {
             return ResponseEntity.ok(service.update(id, barang));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Barang>> getByStatusParkir(@RequestParam Boolean statusParkir){
+        return ResponseEntity.ok(service.getByStatusParkir(statusParkir));
     }
 
 }

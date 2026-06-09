@@ -5,6 +5,8 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 @Data
 @Entity
 @Table(name = "transaksi")
@@ -29,6 +31,7 @@ public class Transaksi {
     @Column(name = "net_profit_owner")
     private BigDecimal netProfitOwner;
 
+    @CreationTimestamp
     @Column(name = "tanggal_jual")
     private LocalDateTime tanggalJual;
 

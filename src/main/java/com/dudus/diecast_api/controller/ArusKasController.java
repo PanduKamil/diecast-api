@@ -20,7 +20,7 @@ public class ArusKasController {
     public List<ArusKas> getAll(){return service.getAll();}
 
     @GetMapping("/{id}")
-    public ResponseEntity<ArusKas> getById(@PathVariable Long id){
+    public ResponseEntity<ArusKas> getById(@PathVariable Integer id){
         return service.getById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
@@ -32,7 +32,7 @@ public class ArusKasController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Integer id){
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

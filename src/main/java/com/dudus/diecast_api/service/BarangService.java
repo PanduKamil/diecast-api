@@ -20,11 +20,11 @@ public class BarangService {
         return repository.findAll();
     }
 
-    public Optional<Barang> getById(Long id)  {
+    public Optional<Barang> getById(Integer id)  {
         return repository.findById(id);
     }
 
-    public Barang getByIdOrThrow(Long id){
+    public Barang getByIdOrThrow(Integer id){
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Barang tidak ditemukan" + id));
     }
@@ -33,11 +33,11 @@ public class BarangService {
         return repository.save(diecast);
     }
 
-    public void delete(Long id) {
+    public void delete(Integer id) {
         repository.deleteById(id);
     }
 
-    public Barang update(Long id, Barang barangBaru){
+    public Barang update(Integer id, Barang barangBaru){
         return repository.findById(id)
                 .map(barangLama ->{
                     barangLama.setNamaBarang(barangBaru.getNamaBarang());
@@ -48,6 +48,9 @@ public class BarangService {
                     return repository.save(barangLama);
                 })
             .orElseThrow(() -> new ResourceNotFoundException("Barang tidak ditemukan" + id));
-                
+    }
+
+    public List<Barang> getByStatusParkir(Boolean statusParkir){
+        return repository.findByStatusParkir(statusParkir);
     }
 }
