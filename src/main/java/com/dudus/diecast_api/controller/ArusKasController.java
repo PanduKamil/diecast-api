@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/arus-kas")
@@ -35,5 +36,9 @@ public class ArusKasController {
     public ResponseEntity<Void> delete(@PathVariable Integer id){
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/dashboard")
+    public ResponseEntity<Map<String, Object>> getDashboard(){
+        return ResponseEntity.ok(service.getDashboard());
     }
 }
