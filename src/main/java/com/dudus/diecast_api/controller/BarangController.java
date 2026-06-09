@@ -2,6 +2,7 @@ package com.dudus.diecast_api.controller;
 
 import com.dudus.diecast_api.model.Barang;
 import com.dudus.diecast_api.service.BarangService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,13 +24,11 @@ public class BarangController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Barang> getById(@PathVariable Long id){
-        return service.getById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(service.getByIdOrThrow(id));
     }
 
     @PostMapping
-    public Barang create(@RequestBody Barang barang){
+    public Barang create(@Valid @RequestBody Barang barang){
         return service.save(barang);
     }
 
@@ -40,7 +39,7 @@ public class BarangController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Barang> update(@PathVariable Long id, @RequestBody Barang barang){
+    public ResponseEntity<Barang> update(@PathVariable Long id, @Valid @RequestBody Barang barang){
         try {
             return ResponseEntity.ok(service.update(id, barang));
         } catch (RuntimeException e) {

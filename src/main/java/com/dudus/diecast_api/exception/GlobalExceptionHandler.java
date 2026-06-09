@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex){
         Map<String, Object> error = new HashMap<>();
-        error.put("status",  400);
+        error.put("status",  404);
         error.put("message", ex.getMessage());
         error.put("timestamp", LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -28,6 +28,7 @@ public class GlobalExceptionHandler {
         error.put("message", "Validasi gagal");
         error.put("timestamp", LocalDateTime.now());
 
+        //kumpulan field2 error.
         Map<String, String> fields = new HashMap<>();
         ex.getBindingResult().getFieldErrors()
             .forEach(e -> fields.put(e.getField(), e.getDefaultMessage()));

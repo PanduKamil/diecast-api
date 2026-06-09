@@ -2,6 +2,7 @@ package com.dudus.diecast_api.service;
 
 import com.dudus.diecast_api.model.Barang;
 import com.dudus.diecast_api.repository.BarangRepository;
+import com.dudus.diecast_api.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +24,11 @@ public class BarangService {
         return repository.findById(id);
     }
 
+    public Barang getByIdOrThrow(Long id){
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Barang tidak ditemukan" + id));
+    }
+
     public Barang save(Barang diecast) {
         return repository.save(diecast);
     }
@@ -41,7 +47,7 @@ public class BarangService {
                     barangLama.setStatusParkir(barangBaru.getStatusParkir());
                     return repository.save(barangLama);
                 })
-            .orElseThrow(() -> new RuntimeException("Barang tidak ditemukan" + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Barang tidak ditemukan" + id));
                 
     }
 }
