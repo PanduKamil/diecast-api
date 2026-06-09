@@ -9,4 +9,6 @@ import java.util.List;
 public interface BarangRepository extends JpaRepository<Barang, Integer> {
     List<Barang> findByStatusParkir(Boolean statusParkir);
     
+    Barang findByNamaBarangIgnoreCase(String namaBarang);
+    
 }

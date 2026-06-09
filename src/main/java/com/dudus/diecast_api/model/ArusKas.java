@@ -5,6 +5,8 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CurrentTimestamp;
+
 @Data
 @Entity
 @Table(name = "arus_kas")
@@ -15,6 +17,7 @@ public class ArusKas {
     @Column(name = "id_kas")
     private Integer idKas;
 
+    @CurrentTimestamp
     private LocalDateTime tanggal;
 
     @Column(name = "tipe_kas")

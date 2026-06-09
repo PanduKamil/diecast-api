@@ -37,7 +37,11 @@ public class TransaksiController {
         Transaksi result = service.jual(barangId, jumlah, hargaJual);
         return ResponseEntity.ok(result);
     }
-
+    @PostMapping("/batal/{id}")
+    public ResponseEntity<Void> batal(@PathVariable Integer id){
+        service.batal(id);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }
