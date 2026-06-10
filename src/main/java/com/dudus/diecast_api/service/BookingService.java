@@ -91,5 +91,22 @@ public class BookingService {
         return saved;
     }
 
+    @Transactional
+    public void batal(Integer bookingId){
+        Booking booking = repository.findById(bookingId)
+            .orElseThrow(() -> new ResourceNotFoundException("Data booking tidak adaa" + bookingId));
+        
+        //cek apakah status Active
+        if (!booking.getStatus().equals("ACTIVE")) {
+            throw new IllegalArgumentException("Booking sudah" + booking.getStatus() + ", Tidak bisa dibatalkan!!!");     
+        }
 
+        // Balikin Stok
+        Barang barang = booking.getBarang();
+        barang.setStok(barang.getStok() + booking.getJumlah());
+        barangRepository.save(barang);
+
+        booking.setStatus("CANCELLED");
+        repository.save(booking);
+    }
 }

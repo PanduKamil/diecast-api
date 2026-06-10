@@ -43,5 +43,9 @@ public class BookingController {
         return ResponseEntity.ok(service.lunas(id, hargaLaku));
     }
 
-
+    @PostMapping("/batal/{id}")
+    public ResponseEntity<Void> batal(@PathVariable Integer id){
+        service.batal(id);
+        return ResponseEntity.noContent().build();
+    }
 }
