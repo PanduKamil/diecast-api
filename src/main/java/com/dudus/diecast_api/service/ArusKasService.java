@@ -3,6 +3,7 @@ package com.dudus.diecast_api.service;
 import com.dudus.diecast_api.model.ArusKas;
 import com.dudus.diecast_api.repository.ArusKasRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -55,6 +56,23 @@ public class ArusKasService {
         return total != null ? total : BigDecimal.ZERO;
     }
 
+    @Transactional  
+    public void resetProfit(){
+        BigDecimal saldo = hitungSaldo("PROFIT");
+        if (saldo.compareTo(BigDecimal.ZERO)<= 0) {
+            throw new IllegalArgumentException("Tidak ada profit yang bisa dicairkan! ");
+        }
+        catatKas("KELUAR", "PROFIT", saldo, "Penarikan Profit Owner");
+    }
+
+    @Transactional  
+    public void resetReseller(){
+        BigDecimal saldo = hitungSaldo("RESELLER");
+        if (saldo.compareTo(BigDecimal.ZERO)<= 0) {
+            throw new IllegalArgumentException("Tidak ada komisi yang bisa dicairkan! ");
+        }
+        catatKas("KELUAR", "RESELLER", saldo, "Penarikan Komisi Reseller");
+    }
     // Helper dari TransaksiService
     public void catatKas(String tipeKas, String dompet, BigDecimal jumlah, String keterangan){
         ArusKas kas = new ArusKas();

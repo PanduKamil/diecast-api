@@ -41,4 +41,16 @@ public class ArusKasController {
     public ResponseEntity<Map<String, Object>> getDashboard(){
         return ResponseEntity.ok(service.getDashboard());
     }
+
+    @PostMapping("/reset/profit")
+    public ResponseEntity<Void> resetProfit(){
+            service.resetProfit();
+            return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reset/reseller")
+    public ResponseEntity<Void> resetReseller(){
+            service.resetReseller();
+            return ResponseEntity.noContent().build();
+    }
 }
