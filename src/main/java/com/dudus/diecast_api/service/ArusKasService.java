@@ -73,6 +73,14 @@ public class ArusKasService {
         }
         catatKas("KELUAR", "RESELLER", saldo, "Penarikan Komisi Reseller");
     }
+    // Suntikan Modal
+    @Transactional
+    public void suntikModal(BigDecimal jumlah, String keterangan){
+        if (jumlah.compareTo(BigDecimal.ZERO)<= 0) {
+            throw new IllegalArgumentException("Jumlah suntikan modal harus lebih dari 0! ");
+        }
+        catatKas("MASUK", "MODAL", jumlah, keterangan);
+    }
     // Helper dari TransaksiService
     public void catatKas(String tipeKas, String dompet, BigDecimal jumlah, String keterangan){
         ArusKas kas = new ArusKas();

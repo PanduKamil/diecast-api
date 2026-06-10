@@ -5,6 +5,7 @@ import com.dudus.diecast_api.service.ArusKasService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -52,5 +53,14 @@ public class ArusKasController {
     public ResponseEntity<Void> resetReseller(){
             service.resetReseller();
             return ResponseEntity.noContent().build();
+    }
+
+    //Suntik modal
+    @PostMapping("/suntik")
+    public ResponseEntity<Void> suntikModal(@RequestBody Map<String, Object> body){
+        BigDecimal jumlah = new BigDecimal(body.get("jumlah").toString());
+        String keterangan = body.getOrDefault("keterangan", "Suntikan Modal").toString();
+        service.suntikModal(jumlah, keterangan);
+        return ResponseEntity.noContent().build();
     }
 }
