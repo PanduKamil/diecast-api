@@ -1,8 +1,12 @@
 package com.dudus.diecast_api.controller;
 
-import com.dudus.diecast_api.model.Booking;
+import com.dudus.diecast_api.dto.BookingRequest;
+import com.dudus.diecast_api.dto.BookingResponse;
 import com.dudus.diecast_api.model.Transaksi;
 import com.dudus.diecast_api.service.BookingService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,16 +24,15 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<Booking> getAll(){return service.getAll();}
+    public List<BookingResponse> getAll(){return service.getAll();}
 
     @GetMapping("/{id}")
-    public ResponseEntity<Booking> getById(@PathVariable Integer id){
-        return service.getById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<BookingResponse> getById(@PathVariable Integer id){
+        return ResponseEntity.ok(service.getByIdOrThrow(id));
     }
     @PostMapping
-    public Booking create(@RequestBody Booking booking){return service.save(booking);}
+    public ResponseEntity<BookingResponse> create(@Valid @RequestBody BookingRequest request){
+        return ResponseEntity.ok(service.saveDto(request));}
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id){

@@ -1,5 +1,7 @@
 package com.dudus.diecast_api.controller;
 
+import com.dudus.diecast_api.dto.BarangRequest;
+import com.dudus.diecast_api.dto.BarangResponse;
 import com.dudus.diecast_api.model.Barang;
 import com.dudus.diecast_api.service.BarangService;
 import jakarta.validation.Valid;
@@ -18,18 +20,18 @@ public class BarangController {
     }
 
     @GetMapping
-    public List<Barang> getAll() {
+    public List<BarangResponse> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Barang> getById(@PathVariable Integer id){
+    public ResponseEntity<BarangResponse> getById(@PathVariable Integer id){
         return ResponseEntity.ok(service.getByIdOrThrow(id));
     }
 
     @PostMapping
-    public Barang create(@Valid @RequestBody Barang barang){
-        return service.save(barang);
+    public ResponseEntity<BarangResponse> create(@Valid @RequestBody BarangRequest request){
+        return ResponseEntity.ok(service.saveDto(request));
     }
 
     @DeleteMapping("/{id}")

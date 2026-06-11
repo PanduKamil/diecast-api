@@ -6,12 +6,14 @@ import com.dudus.diecast_api.model.Barang;
 import com.dudus.diecast_api.repository.BarangRepository;
 import com.dudus.diecast_api.repository.BookingRepository;
 import com.dudus.diecast_api.repository.TransaksiRepository;
+import com.dudus.diecast_api.dto.BookingRequest;
+import com.dudus.diecast_api.dto.BookingResponse;
 import com.dudus.diecast_api.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 @Service
@@ -31,10 +33,33 @@ public class BookingService {
         this.arusKasService = arusKasService;
     }
     
-    public List<Booking> getAll(){return repository.findAll();}
-    
-    public Optional<Booking> getById(Integer id){return repository.findById(id);}
+    private BookingResponse toResponse(Booking booking){
+        BookingResponse response = new BookingResponse();
+        response.setId(booking.getId());
+        response.setBarangId(booking.getBarang().getId());
+        response.setNamaBarang(booking.getBarang().getNamaBarang());
+        response.setJumlah(booking.getJumlah());
+        response.setHargaBooking(booking.getHargaBooking());
+        response.setTanggalBooking(booking.getTanggalBooking());
+        response.setBatasPembayaran(booking.getBatasPembayaran());
+        response.setStatus(booking.getStatus());
+        return response; 
 
+    }
+    public List<BookingResponse> getAll(){
+        return repository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+    
+    public BookingResponse getByIdOrThrow(Integer id){
+        Booking booking = repository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Booking tidak ditemukan" + id));
+        return toResponse(booking);
+    }
+
+    
     @Transactional
     public Booking save(Booking bookingBaru){
 
@@ -46,7 +71,21 @@ public class BookingService {
         // potong stok
         barang.setStok(barang.getStok() - bookingBaru.getJumlah());
         barangRepository.save(barang);
-        return repository.save(bookingBaru);}
+        return repository.save(bookingBaru);
+    }
+    public BookingResponse saveDto(BookingRequest request){
+        Barang barang = barangRepository.findById(request.getBarangId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Barang tidak ditemukan"));
+        Booking booking = new Booking();
+        booking.setBarang(barang);
+        booking.setNamaPembooking(request.getNamaPembooking());
+        booking.setHargaBooking(request.getHargaBooking());
+        booking.setJumlah(request.getJumlah());
+        booking.setBatasPembayaran(request.getBatasPembayaran());
+        booking.setStatus("ACTIVE");
+        Booking saved = save(booking);
+        return toResponse(saved);
+    }
 
     public void delete(Integer id){repository.deleteById(id);
     }

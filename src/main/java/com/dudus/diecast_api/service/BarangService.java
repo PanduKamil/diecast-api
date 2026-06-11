@@ -2,6 +2,8 @@ package com.dudus.diecast_api.service;
 
 import com.dudus.diecast_api.model.Barang;
 import com.dudus.diecast_api.repository.BarangRepository;
+import com.dudus.diecast_api.dto.BarangRequest;
+import com.dudus.diecast_api.dto.BarangResponse;
 import com.dudus.diecast_api.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BarangService {
@@ -21,19 +24,48 @@ public class BarangService {
         this.arusKasService = arusKasService;
     }
 
-    public List<Barang> getAll(){
-        return repository.findAll();
+    private Barang toEntity(BarangRequest request){
+        Barang barang = new Barang();
+        barang.setNamaBarang(request.getNamaBarang());
+        barang.setHargaModalAvg(request.getHargaModalAvg());
+        barang.setHargaJualPerkiraan(request.getHargaJualPerkiraan());
+        barang.setStok(request.getStok());
+        barang.setStatusParkir(request.getStatusParkir());
+        return barang;
+    }
+    private BarangResponse toResponse(Barang barang){
+        BarangResponse response = new BarangResponse();
+        response.setId(barang.getId());
+        response.setNamaBarang(barang.getNamaBarang());
+        response.setHargaJualPerkiraan(barang.getHargaJualPerkiraan());
+        response.setHargaModalAvg(barang.getHargaModalAvg()); //Nanti di ilangkan untuk menu user
+        response.setStok(barang.getStok());
+        response.setStatusParkir(barang.getStatusParkir());
+        response.setTanggalMasuk(barang.getTanggalMasuk());
+        return response;
+    }
+    public List<BarangResponse> getAll(){
+        return repository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     public Optional<Barang> getById(Integer id)  {
         return repository.findById(id);
     }
 
-    public Barang getByIdOrThrow(Integer id){
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Barang tidak ditemukan" + id));
+    public BarangResponse getByIdOrThrow(Integer id){
+        Barang barang = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("barang tifak ditemukan : " + id));
+                return toResponse(barang);
     }
 
+    public BarangResponse saveDto(BarangRequest request){
+        Barang barang = toEntity(request);
+        Barang saved = save(barang);
+        return toResponse(saved);
+    }
     @Transactional
     public Barang save(Barang barangBaru) {
         Barang existing = repository.findByNamaBarangIgnoreCase(barangBaru.getNamaBarang());
