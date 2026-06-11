@@ -35,8 +35,10 @@ public class AuthController {
             return ResponseEntity.status(401)
                     .body(Map.of("message", "Usernam atau Password salah"));
         }
-        String token =jwtUtil.generateToken(username);
-        return ResponseEntity.ok(Map.of("token", token));
+        String token =jwtUtil.generateToken(username, user.getRole());
+        return ResponseEntity.ok(Map.of(
+            "token", token,
+            "role", user.getRole()));
     }
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(@RequestBody Map<String, String> body){
@@ -51,6 +53,7 @@ public class AuthController {
         Users user = new Users();
         user.setUsername(username);
         user.setPasswordHash(passwordEncoder.encode(password));
+        user.setRole("RESELLER");
         usersRepository.save(user);
 
         return ResponseEntity.ok(Map.of("message", "Register Berhasil"));

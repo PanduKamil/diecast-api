@@ -17,4 +17,6 @@ public class Users {
 
     @Column(name = "password_hash")
     private String passwordHash;
+
+    private String role;
 }

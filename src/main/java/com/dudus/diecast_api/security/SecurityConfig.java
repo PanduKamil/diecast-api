@@ -2,6 +2,7 @@ package com.dudus.diecast_api.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,6 +36,14 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/auth/register").permitAll()
                 .requestMatchers("/error").permitAll()
+                // EndPoinKhusus Owner
+                .requestMatchers(HttpMethod.GET,"/api/arus-kas/**").hasRole("OWNER")
+                .requestMatchers(HttpMethod.POST,"/api/arus-kas/**").hasRole("OWNER")
+                .requestMatchers(HttpMethod.DELETE,"/api/diecast/**").hasRole("OWNER")
+                .requestMatchers(HttpMethod.PUT,"/api/diecast/**").hasRole("OWNER")
+                .requestMatchers(HttpMethod.POST,"/api/transaksi/batal/**").hasRole("OWNER")
+                .requestMatchers(HttpMethod.POST,"/api/booking/lunas/**").hasRole("OWNER")
+
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex
