@@ -2,10 +2,12 @@ package com.dudus.diecast_api.service;
 
 import com.dudus.diecast_api.model.ArusKas;
 import com.dudus.diecast_api.repository.ArusKasRepository;
+import com.dudus.diecast_api.repository.TransaksiRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
@@ -14,9 +16,11 @@ import java.util.HashMap;
 @Service
 public class ArusKasService {
     private final ArusKasRepository repository;
+    private final TransaksiRepository transaksiRepository;
     
-    public ArusKasService(ArusKasRepository repository){
+    public ArusKasService(ArusKasRepository repository, TransaksiRepository transaksiRepository){
         this.repository = repository;
+        this.transaksiRepository = transaksiRepository;
     }
 
     public List<ArusKas> getAll(){return repository.findAll();}
@@ -31,6 +35,17 @@ public class ArusKasService {
 
         BigDecimal profitAllTime = hitungTotalMasuk("PROFIT");
         BigDecimal komisiAllTime = hitungTotalMasuk("RESELLER");
+        BigDecimal totalModalKeluar = hitungTotalKeluar("MODAL");
+
+        BigDecimal totalOmset = transaksiRepository.sumTotalOmset();
+        if (totalOmset == null) totalOmset = BigDecimal.ZERO;
+
+        BigDecimal roi = BigDecimal.ZERO;
+        if (totalModalKeluar.compareTo(BigDecimal.ZERO) > 0) {
+            roi = profitAllTime
+                    .divide(totalModalKeluar, 4, RoundingMode.HALF_UP)
+                    .multiply(new BigDecimal("100"));
+        }
 
         Map<String, Object> data = new HashMap<>();
         data.put("danaBelanjaModal", saldoModal);
@@ -38,6 +53,8 @@ public class ArusKasService {
         data.put("komisiSaatIni", saldoReseller);
         data.put("profitAllTime", profitAllTime);
         data.put("komisiAllTime", komisiAllTime);
+        data.put("totalOmset", totalOmset);
+        data.put("roiPersen", roi);
 
         return data;
     }
@@ -53,6 +70,10 @@ public class ArusKasService {
 
     public BigDecimal hitungTotalMasuk(String dompet){
         BigDecimal total = repository.sumByTipeAndDompet("MASUK", dompet);
+        return total != null ? total : BigDecimal.ZERO;
+    }
+    public BigDecimal hitungTotalKeluar(String dompet){
+        BigDecimal total = repository.sumByTipeAndDompet("KELUAR", dompet);
         return total != null ? total : BigDecimal.ZERO;
     }
 
