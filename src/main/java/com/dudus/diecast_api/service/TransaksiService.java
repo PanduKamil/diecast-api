@@ -10,11 +10,14 @@ import com.dudus.diecast_api.repository.TransaksiRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class TransaksiService {
     private static final BigDecimal KOMISI_RESELLER = new BigDecimal("0.35");
@@ -42,11 +45,9 @@ public class TransaksiService {
         response.setTanggalJual(transaksi.getTanggalJual());
         return response; 
     }
-    public List<TransaksiResponse> getAll(){
-        return transaksiRepository.findAll()
-                .stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+    public Page<TransaksiResponse> getAll(Pageable pageable){
+        return transaksiRepository.findAll(pageable)
+                .map(this::toResponse);
     }
     public TransaksiResponse getByIdOrThrow(Integer id){
         Transaksi transaksi = transaksiRepository.findById(id)
@@ -56,6 +57,9 @@ public class TransaksiService {
 
     @Transactional
     public TransaksiResponse jual(TransaksiRequest request){
+        // Info2 logg barang kejual
+        log.info("Proses penjualan barangId: {}, jumlah: {}",
+                request.getBarangId(), request.getJumlah());
         // Cek Barang
         Barang barang = barangRepository.findById(request.getBarangId())
                 .orElseThrow(() -> new ResourceNotFoundException("Barang tidak ditemukan: " + request.getBarangId()));
@@ -93,11 +97,16 @@ public class TransaksiService {
         arusKasService.catatKas("MASUK", "MODAL", totalModal, "Modal Balik dari penjualan: " + barang.getNamaBarang());
         arusKasService.catatKas("MASUK", "RESELLER", komisiReseller, "komisi Reseller dari penjualan: " + barang.getNamaBarang());
         arusKasService.catatKas("MASUK", "PROFIT", netProfitOwner, "Laba owner dari penjualan: " + barang.getNamaBarang());
+        //log berhasil
+        log.info("Transaksi Berhasil barang id: {}, total: {}",
+                saved.getId(), saved.getHargaJual()
+        );
         return toResponse(saved);
     }
 
     @Transactional
     public void batal(Integer idTransaksi){
+        log.info("Membatal transaksi id: {}", idTransaksi);
         // cek validasi adanya transaksi
         Transaksi transaksi = transaksiRepository.findById(idTransaksi)
                     .orElseThrow(() -> new ResourceNotFoundException("Transaksi tidak ditemukan " + idTransaksi));
@@ -117,6 +126,8 @@ public class TransaksiService {
 
     // hapus transaksi
     transaksiRepository.deleteById(idTransaksi);
+            log.info("Transaksi {} berhasil dibatalkan", idTransaksi);
+
     }
     
 }

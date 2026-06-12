@@ -5,14 +5,16 @@ import com.dudus.diecast_api.repository.BarangRepository;
 import com.dudus.diecast_api.dto.BarangRequest;
 import com.dudus.diecast_api.dto.BarangResponse;
 import com.dudus.diecast_api.exception.ResourceNotFoundException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class BarangService {
@@ -44,11 +46,9 @@ public class BarangService {
         response.setTanggalMasuk(barang.getTanggalMasuk());
         return response;
     }
-    public List<BarangResponse> getAll(){
-        return repository.findAll()
-                .stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+    public Page<BarangResponse> getAll(Pageable pageable){
+        return repository.findAll(pageable) 
+                .map(this::toResponse);
     }
 
     public Optional<Barang> getById(Integer id)  {

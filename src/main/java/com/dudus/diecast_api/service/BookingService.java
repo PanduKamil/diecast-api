@@ -6,6 +6,9 @@ import com.dudus.diecast_api.model.Barang;
 import com.dudus.diecast_api.repository.BarangRepository;
 import com.dudus.diecast_api.repository.BookingRepository;
 import com.dudus.diecast_api.repository.TransaksiRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.dudus.diecast_api.dto.BookingRequest;
 import com.dudus.diecast_api.dto.BookingResponse;
 import com.dudus.diecast_api.exception.ResourceNotFoundException;
@@ -16,6 +19,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+@Slf4j
 @Service
 public class BookingService {
     private final BookingRepository repository;
@@ -62,7 +67,9 @@ public class BookingService {
     
     @Transactional
     public Booking save(Booking bookingBaru){
-
+        log.info("Proses pembookingan barang: {}",                      // LOG
+                bookingBaru.getBarang()
+        );
         Barang barang = barangRepository.findById(bookingBaru.getBarang().getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Barang tidak ada!"));
         if (barang.getStok() < bookingBaru.getJumlah()) {
@@ -71,6 +78,7 @@ public class BookingService {
         // potong stok
         barang.setStok(barang.getStok() - bookingBaru.getJumlah());
         barangRepository.save(barang);
+        log.info("Pembookingan Berhasil: {}",bookingBaru.getBarang());  // LOG BARU
         return repository.save(bookingBaru);
     }
     public BookingResponse saveDto(BookingRequest request){
@@ -92,6 +100,7 @@ public class BookingService {
 
     @Transactional
     public Transaksi lunas(Integer bookingId, BigDecimal hargaLaku){
+        log.info("Proses Pelunasan Pembookingan id: {}", bookingId);    // LOG BARU booking
         Booking booking = repository.findById(bookingId)
             .orElseThrow(()-> new ResourceNotFoundException("Booking tidak ada" + bookingId));
         if (!booking.getStatus().equals("ACTIVE")) {
@@ -127,11 +136,13 @@ public class BookingService {
         arusKasService.catatKas("MASUK", "RESELLER", komisiReseller, "komisi Reseller dari pelunasan Booking: " + barang.getNamaBarang());
         arusKasService.catatKas("MASUK", "PROFIT", netProfitOwner, "Laba owner dari pelunasan Booking: " + barang.getNamaBarang());
         
+        log.info("Pelunasan Booking berhasil id: {}", bookingId); // LOG BARU
         return saved;
     }
 
     @Transactional
     public void batal(Integer bookingId){
+        log.info("Membatalkan Pembookingan id{}", bookingId);   // LOG BARU
         Booking booking = repository.findById(bookingId)
             .orElseThrow(() -> new ResourceNotFoundException("Data booking tidak adaa" + bookingId));
         
@@ -146,6 +157,8 @@ public class BookingService {
         barangRepository.save(barang);
 
         booking.setStatus("CANCELLED");
+        log.info("Membatalkan booking id: {}", bookingId);   // Log BARU Batal Booking
+
         repository.save(booking);
     }
 }
