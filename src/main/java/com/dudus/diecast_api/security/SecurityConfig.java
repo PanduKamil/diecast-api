@@ -36,6 +36,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/auth/register").permitAll()
                 .requestMatchers("/error").permitAll()
+                .requestMatchers("/swagger-ui/**",
+                                  "/swagger-ui.html",
+                                  "/v3/api-docs/**").permitAll()         
                 // EndPoinKhusus Owner
                 .requestMatchers(HttpMethod.GET,"/api/arus-kas/**").hasRole("OWNER")
                 .requestMatchers(HttpMethod.POST,"/api/arus-kas/**").hasRole("OWNER")
