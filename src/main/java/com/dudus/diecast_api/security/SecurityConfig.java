@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT,"/api/diecast/**").hasRole("OWNER")
                 .requestMatchers(HttpMethod.POST,"/api/transaksi/batal/**").hasRole("OWNER")
                 .requestMatchers(HttpMethod.POST,"/api/booking/lunas/**").hasRole("OWNER")
+                .requestMatchers(HttpMethod.GET, "/api/laporan/**").hasRole("OWNER")
 
                 .anyRequest().authenticated()
             )

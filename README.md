@@ -109,6 +109,11 @@ security/     → JWT filter, token util, security config
   "roiPersen": 16.61
 }
 ```
+### Laporan Keuangan
+| Method | Endpoint | Deskripsi |
+|---|---|---|
+| GET | `/api/laporan/penjualan` | Laporan semua periode (OWNER only) |
+| GET | `/api/laporan/penjualan?bulan=6&tahun=2026` | Laporan filter bulan & tahun (OWNER only) |
 
 ---
 
@@ -197,6 +202,7 @@ Semua error dikembalikan dalam format JSON konsisten:
 - **Role-based access** — role disimpan di JWT token, diverifikasi tiap request via Spring Security. OWNER akses penuh, RESELLER akses terbatas
 - **Pagination** — endpoint list (`/api/diecast`, `/api/transaksi`) mendukung `?page=0&size=10&sortBy=id`, response berupa `Page<T>` dengan metadata `totalElements`, `totalPages`
 - **Logging** — operasi penting (transaksi, booking, pembatalan) tercatat via `@Slf4j` untuk debugging dan audit
+- **Laporan keuangan** — agregasi langsung dari tabel transaksi via JPQL, tanpa tabel baru. Support filter bulan/tahun via `EXTRACT(MONTH/YEAR)`
 ---
 
 ## Roadmap
@@ -206,4 +212,5 @@ Semua error dikembalikan dalam format JSON konsisten:
 - [x] Dashboard keuangan + ROI
 - [x] Role-based access (Owner vs Reseller)
 - [x] Pagination & Logging
+- [x] Laporan keuangan bulanan
 - [ ] Deploy ke Railway
