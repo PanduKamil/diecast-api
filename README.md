@@ -207,10 +207,22 @@ Semua error dikembalikan dalam format JSON konsisten:
 
 ## Roadmap
 
+### ✅ Selesai
+- [x] CRUD + Validasi + Exception Handler
+- [x] Business Logic (Transaksi, Booking, ArusKas)
 - [x] Spring Security + JWT Authentication
-- [x] DTO Pattern (pisah request/response dari Entity)
-- [x] Dashboard keuangan + ROI
+- [x] DTO Pattern
 - [x] Role-based access (Owner vs Reseller)
 - [x] Pagination & Logging
 - [x] Laporan keuangan bulanan
-- [ ] Deploy ke Railway
+
+### 🔧 Portfolio
+- [ ] Unit Testing (TransaksiService, BookingService)
+- [ ] API Documentation (Swagger/OpenAPI)
+- [ ] Search barang by nama
+
+### 🚀 Production Ready
+- [ ] Katalog reseller (hide hargaModal dari reseller)
+- [ ] Rate limiting (proteksi brute force login)
+- [ ] Refresh token
+- [ ] Deploy ke Render
