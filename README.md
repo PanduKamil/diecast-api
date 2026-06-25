@@ -218,7 +218,8 @@ Semua error dikembalikan dalam format JSON konsisten:
 
 ### 🔧 Portfolio
 - [ ] Unit Testing (TransaksiService, BookingService)
-- [ ] API Documentation (Swagger/OpenAPI)
+- [x] Unit Testing (TransaksiService)
+- [x] API Documentation (Swagger/OpenAPI) — akses di `/swagger-ui.html`
 - [ ] Search barang by nama
 
 ### 🚀 Production Ready
