@@ -217,7 +217,7 @@ Semua error dikembalikan dalam format JSON konsisten:
 - [x] Laporan keuangan bulanan
 
 ### 🔧 Portfolio
-- [ ] Unit Testing (TransaksiService, BookingService)
+- [x] Unit Testing (BookingService)
 - [x] Unit Testing (TransaksiService)
 - [x] API Documentation (Swagger/OpenAPI) — akses di `/swagger-ui.html`
 - [ ] Search barang by nama
