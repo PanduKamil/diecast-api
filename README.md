@@ -41,6 +41,7 @@ security/     → JWT filter, token util, security config
 | PUT | `/api/diecast/{id}` | Update barang |
 | DELETE | `/api/diecast/{id}` | Hapus barang |
 | GET | `/api/diecast?page=0&size=10&sortBy=id` | List barang (paginated) |
+| GET | `/api/diecast/search?nama=hotwheels` | Search barang by nama |
 
 **Business logic POST barang:**
 - Jika nama barang sudah ada → update stok + hitung **weighted average modal**
@@ -220,7 +221,7 @@ Semua error dikembalikan dalam format JSON konsisten:
 - [x] Unit Testing (BookingService)
 - [x] Unit Testing (TransaksiService)
 - [x] API Documentation (Swagger/OpenAPI) — akses di `/swagger-ui.html`
-- [ ] Search barang by nama
+- [x] Search barang by nama
 
 ### 🚀 Production Ready
 - [ ] Katalog reseller (hide hargaModal dari reseller)

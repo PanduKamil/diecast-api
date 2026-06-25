@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BarangService {
@@ -118,4 +119,10 @@ public class BarangService {
     public List<Barang> getByStatusParkir(Boolean statusParkir){
         return repository.findByStatusParkir(statusParkir);
     }
+    public List<BarangResponse> search(String nama) {
+    return repository.findByNamaBarangContainingIgnoreCase(nama)
+            .stream()
+            .map(this::toResponse)
+            .collect(Collectors.toList());
+}
 }

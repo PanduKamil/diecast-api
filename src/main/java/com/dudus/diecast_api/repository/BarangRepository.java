@@ -16,6 +16,7 @@ public interface BarangRepository extends JpaRepository<Barang, Integer> {
     
     Barang findByNamaBarangIgnoreCase(String namaBarang);
 
+    List<Barang> findByNamaBarangContainingIgnoreCase(String nama);
     // @Lock(LockModeType.PESSIMISTIC_WRITE)
     // @Query("SELECT b FROM barang b WHERE b.id = :id")
     // Optional<Barang> findByIdWithLock(@Param("id") Integer id);

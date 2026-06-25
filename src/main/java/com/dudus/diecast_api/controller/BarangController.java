@@ -61,5 +61,10 @@ public class BarangController {
     public ResponseEntity<List<Barang>> getByStatusParkir(@RequestParam Boolean statusParkir){
         return ResponseEntity.ok(service.getByStatusParkir(statusParkir));
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<BarangResponse>> search(
+        @RequestParam String nama) {
+        return ResponseEntity.ok(service.search(nama));
+    }
 
 }
