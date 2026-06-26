@@ -42,6 +42,7 @@ security/     → JWT filter, token util, security config
 | DELETE | `/api/diecast/{id}` | Hapus barang |
 | GET | `/api/diecast?page=0&size=10&sortBy=id` | List barang (paginated) |
 | GET | `/api/diecast/search?nama=hotwheels` | Search barang by nama |
+| GET | `/api/diecast/reseller` | Katalog reseller (tanpa harga modal, stok > 0) |
 
 **Business logic POST barang:**
 - Jika nama barang sudah ada → update stok + hitung **weighted average modal**
@@ -224,7 +225,7 @@ Semua error dikembalikan dalam format JSON konsisten:
 - [x] Search barang by nama
 
 ### 🚀 Production Ready
-- [ ] Katalog reseller (hide hargaModal dari reseller)
+- [x] Katalog reseller (hide hargaModal dari reseller)
 - [ ] Rate limiting (proteksi brute force login)
 - [ ] Refresh token
 - [ ] Deploy ke Render

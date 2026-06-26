@@ -3,6 +3,7 @@ package com.dudus.diecast_api.service;
 import com.dudus.diecast_api.model.Barang;
 import com.dudus.diecast_api.repository.BarangRepository;
 import com.dudus.diecast_api.dto.BarangRequest;
+import com.dudus.diecast_api.dto.BarangResellerResponse;
 import com.dudus.diecast_api.dto.BarangResponse;
 import com.dudus.diecast_api.exception.ResourceNotFoundException;
 
@@ -124,5 +125,19 @@ public class BarangService {
             .stream()
             .map(this::toResponse)
             .collect(Collectors.toList());
-}
+    }
+    public List<BarangResellerResponse> getKatalogReseller() {
+    return repository.findAll()
+            .stream()
+            .filter(b -> b.getStok() > 0) // hanya yang ada stok
+            .map(b -> {
+                BarangResellerResponse response = new BarangResellerResponse();
+                response.setId(b.getId());
+                response.setNamaBarang(b.getNamaBarang());
+                response.setHargaJualPerkiraan(b.getHargaJualPerkiraan());
+                response.setStok(b.getStok());
+                return response;
+            })
+            .collect(Collectors.toList());
+    }
 }

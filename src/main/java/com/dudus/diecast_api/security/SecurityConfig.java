@@ -48,6 +48,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/booking/lunas/**").hasRole("OWNER")
                 .requestMatchers(HttpMethod.GET, "/api/laporan/**").hasRole("OWNER")
 
+                // EndPoint Reseller
+                .requestMatchers(HttpMethod.GET, "/api/diecast/reseller").hasRole("RESELLER")
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex

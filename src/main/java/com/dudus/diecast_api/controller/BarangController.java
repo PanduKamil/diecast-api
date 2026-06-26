@@ -1,6 +1,7 @@
 package com.dudus.diecast_api.controller;
 
 import com.dudus.diecast_api.dto.BarangRequest;
+import com.dudus.diecast_api.dto.BarangResellerResponse;
 import com.dudus.diecast_api.dto.BarangResponse;
 import com.dudus.diecast_api.model.Barang;
 import com.dudus.diecast_api.service.BarangService;
@@ -67,4 +68,8 @@ public class BarangController {
         return ResponseEntity.ok(service.search(nama));
     }
 
+    @GetMapping("/reseller")
+    public ResponseEntity<List<BarangResellerResponse>> getKatalogReseller() {
+    return ResponseEntity.ok(service.getKatalogReseller());
+    }
 }
