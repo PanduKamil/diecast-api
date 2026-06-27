@@ -17,13 +17,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
-    private final JwtFilter jwtFilter;
-    
-    public SecurityConfig(JwtFilter jwtFilter){
-        this.jwtFilter = jwtFilter;
-    }
 
+public class SecurityConfig {
+    private final JwtUtil jwtUtil;
+    
+    public SecurityConfig(JwtUtil jwtUtil) {
+    this.jwtUtil = jwtUtil;
+}
+// inject manual limit
+    @Bean
+    public RateLimitFilter rateLimitFilter() {
+        return new RateLimitFilter();
+    }
+    @Bean
+    public JwtFilter jwtFilter() {
+    return new JwtFilter(jwtUtil); // inject JwtUtil
+    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -57,7 +66,8 @@ public class SecurityConfig {
                     response.sendError(401, "Unauthorized"))
                 
             )
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(rateLimitFilter(), UsernamePasswordAuthenticationFilter.class) 
+            .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     @Bean

@@ -205,6 +205,7 @@ Semua error dikembalikan dalam format JSON konsisten:
 - **Pagination** — endpoint list (`/api/diecast`, `/api/transaksi`) mendukung `?page=0&size=10&sortBy=id`, response berupa `Page<T>` dengan metadata `totalElements`, `totalPages`
 - **Logging** — operasi penting (transaksi, booking, pembatalan) tercatat via `@Slf4j` untuk debugging dan audit
 - **Laporan keuangan** — agregasi langsung dari tabel transaksi via JPQL, tanpa tabel baru. Support filter bulan/tahun via `EXTRACT(MONTH/YEAR)`
+- **Rate limiting** — endpoint `/api/auth/**` dibatasi 10 request/menit per IP, return 429 jika melebihi batas
 ---
 
 ## Roadmap
@@ -226,6 +227,6 @@ Semua error dikembalikan dalam format JSON konsisten:
 
 ### 🚀 Production Ready
 - [x] Katalog reseller (hide hargaModal dari reseller)
-- [ ] Rate limiting (proteksi brute force login)
+- [x] Rate limiting (proteksi brute force login)
 - [ ] Refresh token
 - [ ] Deploy ke Render
