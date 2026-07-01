@@ -217,8 +217,8 @@ Semua error dikembalikan dalam format JSON konsisten:
 
 ### Base URL
 ```
-http://localhost:8080          (development)
-https://your-api.onrender.com  (production — isi setelah deploy)
+http://localhost:8080                        (development)
+https://diecast-api.onrender.com            (production ✅)
 ```
 
 ### Alur Login
