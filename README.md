@@ -182,10 +182,13 @@ DB_PASSWORD=your_password
 
 Server jalan di `http://localhost:8080`
 
-### API Documentation
-Setelah server jalan, buka:
+## API Documentation
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
 ```
-http://localhost:8080/swagger-ui.html
+Akses live di: https://diecast-api.onrender.com/swagger-ui/index.html
 ```
 
 ---
@@ -320,4 +323,4 @@ Gunakan `content` untuk data, `totalPages` untuk navigasi halaman, `number` untu
 - [x] Katalog reseller (hide hargaModal dari reseller)
 - [x] Rate limiting (proteksi brute force login)
 - [ ] Refresh token
-- [ ] Deploy ke Render
+- [x] Deploy ke Render
