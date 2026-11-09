@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: diecast-db
+    environment:
+      POSTGRES_DB: diecast
+      POSTGRES_USER: diecast
+      POSTGRES_PASSWORD: diecast_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
