@@ -4,10 +4,12 @@ import com.dudus.diecast_api.dto.TransaksiRequest;
 import com.dudus.diecast_api.dto.TransaksiResponse;
 import com.dudus.diecast_api.exception.ResourceNotFoundException;
 import com.dudus.diecast_api.model.Barang;
+import com.dudus.diecast_api.model.Transaksi;
 import com.dudus.diecast_api.repository.BarangRepository;
 import com.dudus.diecast_api.repository.TransaksiRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -96,5 +99,59 @@ public class TransaksiServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> {
             transaksiService.jual(request);
         });
+    }
+    @Test
+    void jual_hitung_komisi_dan_profit_benar() {
+        Barang barang = new Barang();
+        barang.setId(1);
+        barang.setNamaBarang("Hot Wheels Ferrari");
+        barang.setStok(5);
+        barang.setHargaModalAvg(new BigDecimal("50000"));
+
+        TransaksiRequest request = new TransaksiRequest();
+        request.setBarangId(1);
+        request.setJumlah(2);
+        request.setHargaJual(new BigDecimal("75000"));
+
+        when(barangRepository.findById(1)).thenReturn(Optional.of(barang));
+        when(transaksiRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        transaksiService.jual(request);
+
+        ArgumentCaptor<BigDecimal> nominal = ArgumentCaptor.forClass(BigDecimal.class);
+        verify(arusKasService, times(3)).catatKas(any(), any(), nominal.capture(), any());
+
+        // urutan: MODAL, RESELLER, PROFIT
+        assertEquals(0, new BigDecimal("100000").compareTo(nominal.getAllValues().get(0)));
+        assertEquals(0, new BigDecimal("17500").compareTo(nominal.getAllValues().get(1)));
+        assertEquals(0, new BigDecimal("32500").compareTo(nominal.getAllValues().get(2)));
+        assertEquals(3, barang.getStok());
+    }
+
+    @Test
+    void batal_balikkan_kas_dan_stok_dengan_nominal_benar() {
+        Barang barang = new Barang();
+        barang.setId(1);
+        barang.setNamaBarang("Hot Wheels Ferrari");
+        barang.setStok(3);
+
+        Transaksi t = new Transaksi();
+        t.setBarang(barang);
+        t.setJumlah(2);
+        t.setHargaModalSnapshot(new BigDecimal("50000"));
+        t.setKomisiReseller(new BigDecimal("17500"));
+        t.setNetProfitOwner(new BigDecimal("32500"));
+
+        when(transaksiRepository.findById(1)).thenReturn(Optional.of(t));
+
+        transaksiService.batal(1);
+
+        ArgumentCaptor<BigDecimal> nominal = ArgumentCaptor.forClass(BigDecimal.class);
+        verify(arusKasService, times(3)).catatKas(eq("KELUAR"), any(), nominal.capture(), any());
+
+        // MODAL harus 100000 (50000 x 2), bukan 50000
+        assertEquals(0, new BigDecimal("100000").compareTo(nominal.getAllValues().get(0)));
+        assertEquals(5, barang.getStok());
+        verify(transaksiRepository).deleteById(1);
     }
 }

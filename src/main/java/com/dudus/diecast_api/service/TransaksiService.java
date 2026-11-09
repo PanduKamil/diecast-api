@@ -113,7 +113,7 @@ public class TransaksiService {
     Barang barang = transaksi.getBarang();
     
     // reverse aruskas
-    arusKasService.catatKas("KELUAR", "MODAL", transaksi.getHargaModalSnapshot(), 
+    arusKasService.catatKas("KELUAR", "MODAL", transaksi.getHargaModalSnapshot().multiply(new BigDecimal(transaksi.getJumlah())), 
                     "Pembatalan Transaksi #" + idTransaksi + ": " + barang.getNamaBarang());
     arusKasService.catatKas("KELUAR", "PROFIT", transaksi.getNetProfitOwner(), 
                     "Pembatalan Transaksi #" + idTransaksi + ": " + barang.getNamaBarang());
