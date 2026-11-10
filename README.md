@@ -1,6 +1,6 @@
 # DiecastData API v2 — Spring Boot
 
-Backend sistem manajemen gudang dan keuangan untuk bisnis resale diecast/hotwheels. Migrasi dari Javalin ke Spring Boot dengan arsitektur yang lebih terstruktur dan production-ready.
+Backend sistem manajemen gudang dan keuangan untuk bisnis resale diecast/hotwheels. Migrasi dari Javalin ke Spring Boot dengan arsitektur berlapis yang lebih terstruktur.
 
 ---
 
@@ -8,7 +8,7 @@ Backend sistem manajemen gudang dan keuangan untuk bisnis resale diecast/hotwhee
 
 - **Java 17** + **Spring Boot 3.5**
 - **Spring Data JPA** + **Hibernate**
-- **PostgreSQL** (Supabase)
+- **PostgreSQL** (Docker Local)
 - **Maven**
 - **Lombok**
 - **Spring Security** + **JWT (jjwt 0.11.5)**
@@ -197,6 +197,25 @@ Endpoint khusus OWNER:
    (Windows PowerShell: `.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"`)
 3. Buka Swagger UI di `http://localhost:8080/swagger-ui.html`
 
+### Membuat Akun OWNER (lokal)
+
+Register lewat API selalu menghasilkan role RESELLER. Untuk jadi OWNER di
+database lokal:
+
+1. Register akun lewat Swagger (`POST /api/auth/register`)
+2. Ubah role-nya lewat SQL:
+
+```
+docker exec -it diecast-db psql -U diecast -d diecast -c "UPDATE users SET role='OWNER' WHERE username='namaakun';"
+```
+
+3. Login ulang, role di response akan menjadi OWNER
+
+### Pertama Kali Pakai
+
+Database awal kosong. Alur: login sebagai OWNER, tambah barang lewat
+`POST /api/diecast`, lalu coba jual lewat `POST /api/transaksi/jual`.
+
 ### Menjalankan Test
 
 ```
@@ -216,10 +235,6 @@ Set environment variable `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, dan `PORT`.
 ![alt text](image-1.png)
 ![alt text](image-2.png)
 ![alt text](image-3.png)
-
-```
-Akses live di: https://diecast-api.onrender.com/swagger-ui/index.html
-```
 
 ---
 
@@ -252,7 +267,6 @@ Semua error dikembalikan dalam format JSON konsisten:
 
 ```
 http://localhost:8080                        (development)
-https://diecast-api.onrender.com            (production ✅)
 ```
 
 ### Alur Login
@@ -354,6 +368,7 @@ Gunakan `content` untuk data, `totalPages` untuk navigasi halaman, `number` untu
 - **Laporan keuangan** — agregasi langsung dari tabel transaksi via JPQL, tanpa tabel baru. Support filter bulan/tahun via `EXTRACT(MONTH/YEAR)`
 - **Rate limiting** — endpoint `/api/auth/**` dibatasi 10 request/menit per IP via Bucket4j, return 429 jika melebihi batas
 - **Swagger UI** — dokumentasi endpoint otomatis, akses di `/swagger-ui.html`
+- **Unit test** — logika uang di `TransaksiService` dan `BookingService` diuji dengan Mockito. Tes nominal pembatalan transaksi sempat menemukan bug (modal dicatat per unit, bukan total) yang kemudian diperbaiki.
 
 ---
 
@@ -381,4 +396,4 @@ Gunakan `content` untuk data, `totalPages` untuk navigasi halaman, `number` untu
 - [x] Katalog reseller (hide hargaModal dari reseller)
 - [x] Rate limiting (proteksi brute force login)
 - [ ] Refresh token
-- [x] Deploy ke Render
+- [ ] Deploy
