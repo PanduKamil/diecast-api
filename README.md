@@ -34,31 +34,35 @@ security/     → JWT filter, rate limit filter, token util, security config
 ## Fitur
 
 ### Manajemen Barang
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/api/diecast?page=0&size=10&sortBy=id` | List barang (paginated) |
-| GET | `/api/diecast/{id}` | Detail satu barang |
-| GET | `/api/diecast/filter?statusParkir=true` | Filter by status parkir |
-| GET | `/api/diecast/search?nama=hotwheels` | Search barang by nama |
-| GET | `/api/diecast/reseller` | Katalog reseller (tanpa harga modal, stok > 0) |
-| POST | `/api/diecast` | Tambah / restock barang |
-| PUT | `/api/diecast/{id}` | Update barang (OWNER only) |
-| DELETE | `/api/diecast/{id}` | Hapus barang (OWNER only) |
+
+| Method | Endpoint                                | Deskripsi                                      |
+| ------ | --------------------------------------- | ---------------------------------------------- |
+| GET    | `/api/diecast?page=0&size=10&sortBy=id` | List barang (paginated)                        |
+| GET    | `/api/diecast/{id}`                     | Detail satu barang                             |
+| GET    | `/api/diecast/filter?statusParkir=true` | Filter by status parkir                        |
+| GET    | `/api/diecast/search?nama=hotwheels`    | Search barang by nama                          |
+| GET    | `/api/diecast/reseller`                 | Katalog reseller (tanpa harga modal, stok > 0) |
+| POST   | `/api/diecast`                          | Tambah / restock barang                        |
+| PUT    | `/api/diecast/{id}`                     | Update barang (OWNER only)                     |
+| DELETE | `/api/diecast/{id}`                     | Hapus barang (OWNER only)                      |
 
 **Business logic POST barang:**
+
 - Jika nama barang sudah ada → update stok + hitung **weighted average modal**
 - Jika barang baru → insert baru
 - Otomatis catat **KELUAR MODAL** ke arus kas
 
 ### Transaksi Penjualan
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/api/transaksi?page=0&size=10&sortBy=id` | Riwayat transaksi (paginated, terbaru dulu) |
-| GET | `/api/transaksi/{id}` | Detail transaksi |
-| POST | `/api/transaksi/jual` | Proses penjualan |
-| POST | `/api/transaksi/batal/{id}` | Batalkan transaksi (OWNER only) |
+
+| Method | Endpoint                                  | Deskripsi                                   |
+| ------ | ----------------------------------------- | ------------------------------------------- |
+| GET    | `/api/transaksi?page=0&size=10&sortBy=id` | Riwayat transaksi (paginated, terbaru dulu) |
+| GET    | `/api/transaksi/{id}`                     | Detail transaksi                            |
+| POST   | `/api/transaksi/jual`                     | Proses penjualan                            |
+| POST   | `/api/transaksi/batal/{id}`               | Batalkan transaksi (OWNER only)             |
 
 **Business logic POST jual:**
+
 - Validasi stok cukup
 - Snapshot harga modal saat transaksi
 - Hitung komisi reseller (35%) + net profit owner
@@ -66,40 +70,46 @@ security/     → JWT filter, rate limit filter, token util, security config
 - Otomatis catat 3 arus kas: MASUK MODAL + MASUK RESELLER + MASUK PROFIT
 
 **Business logic batal transaksi:**
+
 - Reverse 3 arus kas (KELUAR semua)
 - Kembalikan stok barang
 - Hapus data transaksi
 
 ### Booking
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/api/booking` | List semua booking |
-| GET | `/api/booking/{id}` | Detail booking |
-| POST | `/api/booking` | Buat booking baru |
-| POST | `/api/booking/lunas/{id}` | Proses pelunasan (OWNER only) |
-| POST | `/api/booking/batal/{id}` | Batalkan booking |
-| DELETE | `/api/booking/{id}` | Hapus booking |
+
+| Method | Endpoint                  | Deskripsi                     |
+| ------ | ------------------------- | ----------------------------- |
+| GET    | `/api/booking`            | List semua booking            |
+| GET    | `/api/booking/{id}`       | Detail booking                |
+| POST   | `/api/booking`            | Buat booking baru             |
+| POST   | `/api/booking/lunas/{id}` | Proses pelunasan (OWNER only) |
+| POST   | `/api/booking/batal/{id}` | Batalkan booking              |
+| DELETE | `/api/booking/{id}`       | Hapus booking                 |
 
 **Business logic booking:**
+
 - Buat booking → potong stok (barang di-reserved)
 - Pelunasan → catat transaksi + 3 arus kas + status COMPLETED
 - Batal → kembalikan stok + status CANCELLED
 
 ### Arus Kas & Keuangan
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/api/arus-kas` | Riwayat semua mutasi kas (OWNER only) |
-| GET | `/api/arus-kas/dashboard` | Dashboard saldo per dompet (OWNER only) |
-| POST | `/api/arus-kas/suntik` | Suntik modal (OWNER only) |
-| POST | `/api/arus-kas/reset/profit` | Cairkan profit owner (OWNER only) |
-| POST | `/api/arus-kas/reset/reseller` | Cairkan komisi reseller (OWNER only) |
+
+| Method | Endpoint                       | Deskripsi                               |
+| ------ | ------------------------------ | --------------------------------------- |
+| GET    | `/api/arus-kas`                | Riwayat semua mutasi kas (OWNER only)   |
+| GET    | `/api/arus-kas/dashboard`      | Dashboard saldo per dompet (OWNER only) |
+| POST   | `/api/arus-kas/suntik`         | Suntik modal (OWNER only)               |
+| POST   | `/api/arus-kas/reset/profit`   | Cairkan profit owner (OWNER only)       |
+| POST   | `/api/arus-kas/reset/reseller` | Cairkan komisi reseller (OWNER only)    |
 
 **Sistem dompet:**
+
 - `MODAL` — dana belanja barang (masuk saat jual, keluar saat kulakan)
 - `PROFIT` — keuntungan bersih owner
 - `RESELLER` — komisi reseller (35% dari profit kotor)
 
 **Dashboard response:**
+
 ```json
 {
   "danaBelanjaModal": 341000,
@@ -113,35 +123,41 @@ security/     → JWT filter, rate limit filter, token util, security config
 ```
 
 ### Laporan Keuangan
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| GET | `/api/laporan/penjualan` | Laporan semua periode (OWNER only) |
-| GET | `/api/laporan/penjualan?bulan=6&tahun=2026` | Laporan filter bulan & tahun (OWNER only) |
+
+| Method | Endpoint                                    | Deskripsi                                 |
+| ------ | ------------------------------------------- | ----------------------------------------- |
+| GET    | `/api/laporan/penjualan`                    | Laporan semua periode (OWNER only)        |
+| GET    | `/api/laporan/penjualan?bulan=6&tahun=2026` | Laporan filter bulan & tahun (OWNER only) |
 
 **Response laporan:**
+
 ```json
 {
   "periode": "6/2026",
-  "totalOmset": 1355000.00,
-  "totalKomisi": 125500.00,
-  "totalBersih": 234500.00,
-  "totalModal": 915000.00
+  "totalOmset": 1355000.0,
+  "totalKomisi": 125500.0,
+  "totalBersih": 234500.0,
+  "totalModal": 915000.0
 }
 ```
 
 ### Autentikasi & Role
-| Method | Endpoint | Deskripsi |
-|---|---|---|
-| POST | `/api/auth/register` | Register user baru (default role: RESELLER) |
-| POST | `/api/auth/login` | Login → dapat JWT token + role |
+
+| Method | Endpoint             | Deskripsi                                   |
+| ------ | -------------------- | ------------------------------------------- |
+| POST   | `/api/auth/register` | Register user baru (default role: RESELLER) |
+| POST   | `/api/auth/login`    | Login → dapat JWT token + role              |
 
 **Flow autentikasi:**
+
 - Register → password di-hash dengan BCrypt → role otomatis RESELLER → simpan ke DB
 - Login → verifikasi password → return JWT token (berlaku 24 jam) + role
 - Semua endpoint selain `/api/auth/**` butuh token di header:
+
 ```
 Authorization: Bearer eyJhbGc...
 ```
+
 - Token tidak valid / tidak ada → 401 Unauthorized
 - Lebih dari 10 request/menit ke `/api/auth/**` → 429 Too Many Requests
 
@@ -152,6 +168,7 @@ Authorization: Bearer eyJhbGc...
 | RESELLER | GET barang, GET katalog reseller, POST transaksi/jual, POST booking |
 
 Endpoint khusus OWNER:
+
 - Semua endpoint `/api/arus-kas/**`
 - Semua endpoint `/api/laporan/**`
 - DELETE & PUT `/api/diecast/**`
@@ -160,33 +177,46 @@ Endpoint khusus OWNER:
 
 ---
 
-## Setup & Run
+## Setup & Run (Lokal)
 
 ### Prerequisites
+
 - Java 17+
-- Maven
-- PostgreSQL (atau Supabase)
+- Docker Desktop (untuk PostgreSQL lokal)
 
-### Environment Variables
-Buat file `.env` di root project:
+### Langkah
+
+1. Jalankan database:
+   ```
+   docker compose up -d
+   ```
+2. Jalankan aplikasi dengan profile `local`:
+   ```
+   ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
+   ```
+   (Windows PowerShell: `.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"`)
+3. Buka Swagger UI di `http://localhost:8080/swagger-ui.html`
+
+### Menjalankan Test
+
 ```
-DB_URL=jdbc:postgresql://db.xxxx.supabase.co:5432/postgres
-DB_USERNAME=postgres
-DB_PASSWORD=your_password
+./mvnw test
 ```
 
-### Run
-```bash
-./mvnw spring-boot:run
-```
+Unit test service memakai mock. Test `contextLoads` butuh PostgreSQL lokal
+jalan dan profile `local` aktif (`SPRING_PROFILES_ACTIVE=local`).
 
-Server jalan di `http://localhost:8080`
+### Production
+
+Set environment variable `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, dan `PORT`.
 
 ## API Documentation
+
 ![alt text](image.png)
 ![alt text](image-1.png)
 ![alt text](image-2.png)
 ![alt text](image-3.png)
+
 ```
 Akses live di: https://diecast-api.onrender.com/swagger-ui/index.html
 ```
@@ -205,41 +235,49 @@ Semua error dikembalikan dalam format JSON konsisten:
 }
 ```
 
-| Status | Kondisi |
-|---|---|
-| 200 | Request berhasil |
-| 400 | Validasi input gagal / business rule violated |
-| 401 | Token tidak ada atau tidak valid |
-| 403 | Role tidak punya akses ke endpoint ini |
-| 404 | Data tidak ditemukan |
-| 429 | Terlalu banyak request (rate limit) |
+| Status | Kondisi                                       |
+| ------ | --------------------------------------------- |
+| 200    | Request berhasil                              |
+| 400    | Validasi input gagal / business rule violated |
+| 401    | Token tidak ada atau tidak valid              |
+| 403    | Role tidak punya akses ke endpoint ini        |
+| 404    | Data tidak ditemukan                          |
+| 429    | Terlalu banyak request (rate limit)           |
 
 ---
 
 ## Panduan Integrasi Frontend
 
 ### Base URL
+
 ```
 http://localhost:8080                        (development)
 https://diecast-api.onrender.com            (production ✅)
 ```
 
 ### Alur Login
+
 1. POST `/api/auth/login` dengan `{ username, password }`
 2. Simpan `token` dan `role` dari response (localStorage / state)
 3. Setiap request berikutnya tambah header:
+
 ```
 Authorization: Bearer {token}
 ```
+
 4. Kalau response 401 → hapus token, redirect ke halaman login
 
 ### Role-based UI
+
 Cek `role` dari response login:
+
 - `OWNER` → tampilkan menu dashboard, laporan, reset profit, semua manajemen
 - `RESELLER` → tampilkan katalog (`/api/diecast/reseller`), form jual, form booking
 
 ### Response Pagination
+
 Endpoint list barang dan transaksi return format:
+
 ```json
 {
   "content": [...],
@@ -249,39 +287,56 @@ Endpoint list barang dan transaksi return format:
   "size": 10
 }
 ```
+
 Gunakan `content` untuk data, `totalPages` untuk navigasi halaman, `number` untuk halaman aktif.
 
 ### Request Body Contoh
 
 **Login:**
+
 ```json
 { "username": "dudus", "password": "password123" }
 ```
 
 **Tambah barang:**
+
 ```json
-{ "namaBarang": "Hot Wheels BMW", "hargaModalAvg": 50000, "hargaJualPerkiraan": 75000, "stok": 5 }
+{
+  "namaBarang": "Hot Wheels BMW",
+  "hargaModalAvg": 50000,
+  "hargaJualPerkiraan": 75000,
+  "stok": 5
+}
 ```
 
 **Jual barang:**
+
 ```json
 { "barangId": 1, "jumlah": 1, "hargaJual": 75000 }
 ```
 
 **Booking:**
+
 ```json
-{ "barangId": 1, "namaPembooking": "Budi", "hargaBooking": 70000, "jumlah": 1, "batasPembayaran": "2026-07-01" }
+{
+  "barangId": 1,
+  "namaPembooking": "Budi",
+  "hargaBooking": 70000,
+  "jumlah": 1,
+  "batasPembayaran": "2026-07-01"
+}
 ```
 
 ### Status Codes yang Perlu Dihandle di Frontend
-| Status | Aksi Frontend |
-|---|---|
-| 200/201 | Tampilkan data / success message |
-| 400 | Tampilkan field `message` dari response sebagai error |
-| 401 | Hapus token, redirect ke login |
-| 403 | Tampilkan "Akses ditolak" |
-| 404 | Tampilkan "Data tidak ditemukan" |
-| 429 | Tampilkan "Terlalu banyak request, tunggu 1 menit" |
+
+| Status  | Aksi Frontend                                         |
+| ------- | ----------------------------------------------------- |
+| 200/201 | Tampilkan data / success message                      |
+| 400     | Tampilkan field `message` dari response sebagai error |
+| 401     | Hapus token, redirect ke login                        |
+| 403     | Tampilkan "Akses ditolak"                             |
+| 404     | Tampilkan "Data tidak ditemukan"                      |
+| 429     | Tampilkan "Terlalu banyak request, tunggu 1 menit"    |
 
 ---
 
@@ -305,6 +360,7 @@ Gunakan `content` untuk data, `totalPages` untuk navigasi halaman, `number` untu
 ## Roadmap
 
 ### ✅ Selesai
+
 - [x] CRUD + Validasi + Exception Handler
 - [x] Business Logic (Transaksi, Booking, ArusKas)
 - [x] Spring Security + JWT Authentication
@@ -314,12 +370,14 @@ Gunakan `content` untuk data, `totalPages` untuk navigasi halaman, `number` untu
 - [x] Laporan keuangan bulanan
 
 ### 🔧 Portfolio
+
 - [x] Unit Testing (TransaksiService)
 - [x] Unit Testing (BookingService)
 - [x] API Documentation (Swagger/OpenAPI) — akses di `/swagger-ui.html`
 - [x] Search barang by nama
 
 ### 🚀 Production Ready
+
 - [x] Katalog reseller (hide hargaModal dari reseller)
 - [x] Rate limiting (proteksi brute force login)
 - [ ] Refresh token
