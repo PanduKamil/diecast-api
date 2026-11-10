@@ -3,17 +3,22 @@ package com.dudus.diecast_api.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET = "diecastdata-secret-key-yang-panjang-banget-biar-aman-256bit";
+    private final String secret;
     private static final long EXPIRATION = 1000 * 60 * 60 * 24; //24 jam
 
+    public JwtUtil(@Value("${jwt.secret}") String secret) {
+        this.secret = secret;
+    }
+
     private Key getKey(){
-        return Keys.hmacShaKeyFor(SECRET.getBytes());
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     //Generate token username

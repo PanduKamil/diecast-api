@@ -227,7 +227,16 @@ jalan dan profile `local` aktif (`SPRING_PROFILES_ACTIVE=local`).
 
 ### Production
 
-Set environment variable `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, dan `PORT`.
+Set environment variable `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, dan `PORT`.
+
+Untuk membuat nilai `JWT_SECRET` yang acak, jalankan ini sekali di PowerShell
+lalu simpan hasilnya sebagai environment variable di server (jangan di-commit):
+
+```
+$b = New-Object byte[] 48; [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [Convert]::ToBase64String($b)
+```
+
+---
 
 ## API Documentation
 
